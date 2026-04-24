@@ -6,9 +6,14 @@
 
 <h1 class="mb-3">Detalle del curso</h1>
 
-@if (TempData["InfoMessage"] is string infoMessage)
+@if (TempData["SuccessMessage"] is string successMessage)
 {
-    <div class="alert alert-info">@infoMessage</div>
+    <div class="alert alert-success">@successMessage</div>
+}
+
+@if (TempData["ErrorMessage"] is string errorMessage)
+{
+    <div class="alert alert-danger">@errorMessage</div>
 }
 
 <div class="card">
