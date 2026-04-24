@@ -9,7 +9,7 @@ Aplicacion web en ASP.NET Core MVC (.NET 10) con Identity, EF Core y SQLite para
 - [x] Pregunta 3 - Inscripcion y validaciones de matricula
 - [x] Pregunta 4 - Sesiones y Redis
 - [x] Pregunta 5 - Panel de Coordinador
-- [ ] Pregunta 6 - Despliegue en Render
+- [x] Pregunta 6 - Despliegue en Render
 
 ## Requisitos
 
@@ -108,9 +108,32 @@ Variables minimas requeridas:
 
 ## URL de despliegue en Render
 
-Pendiente de despliegue.
+Pendiente de despliegue. (Se actualizará una vez publicado por el alumno).
 
-- URL Render: `PENDIENTE`
+- URL Render: `[A COMPLETAR POR EL ALUMNO]`
+
+## Instrucciones de Despliegue en Render (Pregunta 6)
+
+Para desplegar la aplicación en Render, sigue estos pasos:
+
+1. **Crear Web Service**:
+   - Conecta tu repositorio de GitHub en Render y selecciona crear un **Web Service**.
+   - En **Environment**, selecciona `Docker` (el proyecto incluye un `Dockerfile` configurado para .NET 10).
+
+2. **Configurar Base de Datos (SQLite)**:
+   - Ve a la pestaña **Disks** del Web Service y añade un disco:
+     - **Name**: `data` (o el de tu preferencia)
+     - **Mount Path**: `/data`
+     - **Size**: 1 GB
+
+3. **Variables de Entorno**:
+   - `ASPNETCORE_ENVIRONMENT` = `Production`
+   - `ASPNETCORE_URLS` = `http://0.0.0.0:80`
+   - `ConnectionStrings__DefaultConnection` = `Data Source=/data/parcial.db`
+   - `Redis__ConnectionString` = `<url_de_tu_instancia_redis_en_render>`
+
+4. **Desplegar**:
+   - Haz clic en **Deploy**. El servicio construirá la imagen Docker, aplicará las migraciones iniciales automáticamente por el código en `Program.cs`/`SeedData.cs` y estará listo en línea.
 
 ## Flujo Git del examen
 
@@ -142,6 +165,7 @@ git push -u origin nombre-rama
 - 2026-04-23: Se marca avance de Pregunta 3 con inscripcion en estado Pendiente y validaciones server-side (autenticacion, cupo y solape de horario).
 - 2026-04-23: Se marca avance de Pregunta 4 con session del ultimo curso y cache de cursos activos por 60s con Redis/fallback local.
 - 2026-04-24: Se marca avance de Pregunta 5 con Panel de Coordinador, CRUD de cursos, y gestion de matriculas con roles.
+- 2026-04-24: Se marca avance de Pregunta 6 con preparación para despliegue en Render (Dockerfile y documentación de variables/discos).
 
 ---
 
