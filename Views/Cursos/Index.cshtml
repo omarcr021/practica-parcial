@@ -1,0 +1,88 @@
+@model parcial.Models.CatalogoCursosViewModel
+
+@{
+    ViewData["Title"] = "Catalogo de cursos";
+}
+
+<h1 class="mb-3">Catalogo de cursos</h1>
+
+<form method="get" asp-action="Index" class="card card-body mb-4">
+    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+    <div class="row g-3">
+        <div class="col-md-4">
+            <label asp-for="Filtros.Nombre" class="form-label"></label>
+            <input asp-for="Filtros.Nombre" class="form-control" placeholder="Buscar por nombre" />
+        </div>
+
+        <div class="col-md-2">
+            <label asp-for="Filtros.CreditosMin" class="form-label"></label>
+            <input asp-for="Filtros.CreditosMin" class="form-control" min="0" type="number" />
+            <span asp-validation-for="Filtros.CreditosMin" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-2">
+            <label asp-for="Filtros.CreditosMax" class="form-label"></label>
+            <input asp-for="Filtros.CreditosMax" class="form-control" min="0" type="number" />
+            <span asp-validation-for="Filtros.CreditosMax" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-2">
+            <label asp-for="Filtros.HorarioInicio" class="form-label"></label>
+            <input asp-for="Filtros.HorarioInicio" class="form-control" type="time" />
+            <span asp-validation-for="Filtros.HorarioInicio" class="text-danger"></span>
+        </div>
+
+        <div class="col-md-2">
+            <label asp-for="Filtros.HorarioFin" class="form-label"></label>
+            <input asp-for="Filtros.HorarioFin" class="form-control" type="time" />
+            <span asp-validation-for="Filtros.HorarioFin" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="mt-3 d-flex gap-2">
+        <button type="submit" class="btn btn-primary">Filtrar</button>
+        <a asp-action="Index" class="btn btn-outline-secondary">Limpiar</a>
+    </div>
+</form>
+
+@if (!Model.Cursos.Any())
+{
+    <div class="alert alert-info">No se encontraron cursos activos para los filtros ingresados.</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead>
+                <tr>
+                    <th>Codigo</th>
+                    <th>Nombre</th>
+                    <th>Creditos</th>
+                    <th>Cupo</th>
+                    <th>Horario</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var curso in Model.Cursos)
+            {
+                <tr>
+                    <td>@curso.Codigo</td>
+                    <td>@curso.Nombre</td>
+                    <td>@curso.Creditos</td>
+                    <td>@curso.CupoMaximo</td>
+                    <td>@curso.HorarioInicio.ToString(@"hh\:mm") - @curso.HorarioFin.ToString(@"hh\:mm")</td>
+                    <td>
+                        <a asp-action="Details" asp-route-id="@curso.Id" class="btn btn-sm btn-outline-primary">Ver detalle</a>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
