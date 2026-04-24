@@ -10,6 +10,10 @@
     <link rel="stylesheet" href="~/parcial.styles.css" asp-append-version="true" />
 </head>
 <body>
+    @{
+        var ultimoCursoId = Context.Session.GetInt32("UltimoCursoId");
+        var ultimoCursoNombre = Context.Session.GetString("UltimoCursoNombre");
+    }
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
@@ -29,6 +33,12 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Cursos" asp-action="Index">Catalogo</a>
                         </li>
+                        @if (ultimoCursoId.HasValue && !string.IsNullOrWhiteSpace(ultimoCursoNombre))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Cursos" asp-action="Details" asp-route-id="@ultimoCursoId.Value">Volver al curso @ultimoCursoNombre</a>
+                            </li>
+                        }
                     </ul>
                     <partial name="_LoginPartial" />
                 </div>

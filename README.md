@@ -7,7 +7,7 @@ Aplicacion web en ASP.NET Core MVC (.NET 10) con Identity, EF Core y SQLite para
 - [x] Pregunta 1 - Bootstrap + Modelo de datos
 - [x] Pregunta 2 - Catalogo de cursos y filtros
 - [x] Pregunta 3 - Inscripcion y validaciones de matricula
-- [ ] Pregunta 4 - Sesiones y Redis
+- [x] Pregunta 4 - Sesiones y Redis
 - [ ] Pregunta 5 - Panel de Coordinador
 - [ ] Pregunta 6 - Despliegue en Render
 
@@ -85,6 +85,7 @@ Se cargan automaticamente al iniciar la aplicacion:
 Configuradas via archivos `appsettings.json` y `appsettings.Development.json`:
 
 - `ConnectionStrings__DefaultConnection` = `Data Source=parcial.db`
+- `Redis__ConnectionString` = `` (vacio para usar fallback `DistributedMemoryCache` en local)
 
 ### Render (Production)
 
@@ -94,6 +95,16 @@ Variables minimas requeridas:
 - `ASPNETCORE_URLS` = `http://0.0.0.0:${PORT}`
 - `ConnectionStrings__DefaultConnection` = `<cadena_sqlite_o_bd_produccion>`
 - `Redis__ConnectionString` = `<cadena_redis_render_o_redis_cloud>`
+
+## Funcionalidad implementada hasta P4
+
+- Sesion:
+- Se guarda el ultimo curso visitado en session al abrir el detalle.
+- En el layout se muestra el enlace `Volver al curso {Nombre}` cuando existe sesion activa.
+- Cache distribuida de cursos activos:
+- El listado de cursos activos se cachea por 60 segundos.
+- Si Redis no esta configurado en local, el sistema usa `DistributedMemoryCache` como fallback.
+- Invalida cache automaticamente cuando se agrega, edita o elimina un curso (hook en `SaveChanges` del `DbContext`).
 
 ## URL de despliegue en Render
 
@@ -129,6 +140,7 @@ git push -u origin nombre-rama
 - 2026-04-23: Se crea README base con setup local, migraciones, variables de entorno y seccion de Render.
 - 2026-04-23: Se marca avance de Pregunta 1 y Pregunta 2.
 - 2026-04-23: Se marca avance de Pregunta 3 con inscripcion en estado Pendiente y validaciones server-side (autenticacion, cupo y solape de horario).
+- 2026-04-23: Se marca avance de Pregunta 4 con session del ultimo curso y cache de cursos activos por 60s con Redis/fallback local.
 
 ---
 

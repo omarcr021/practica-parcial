@@ -1,13 +1,20 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
+using parcial.Caching;
 using parcial.Models;
 
 namespace parcial.Data;
 
 public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
 {
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+    private readonly IDistributedCache _cache;
+
+    public ApplicationDbContext(
+        DbContextOptions<ApplicationDbContext> options,
+        IDistributedCache cache) : base(options)
     {
+        _cache = cache;
     }
 
     public DbSet<Curso> Cursos => Set<Curso>();
@@ -16,25 +23,43 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     public override int SaveChanges()
     {
         ValidateCupoMaximo();
-        return base.SaveChanges();
+        var invalidateCursosCache = ShouldInvalidateCursosCache();
+        var result = base.SaveChanges();
+        if (invalidateCursosCache)
+        {
+            TryInvalidateCursosCache();
+        }
+
+        return result;
     }
 
     public override int SaveChanges(bool acceptAllChangesOnSuccess)
     {
         ValidateCupoMaximo();
-        return base.SaveChanges(acceptAllChangesOnSuccess);
+        var invalidateCursosCache = ShouldInvalidateCursosCache();
+        var result = base.SaveChanges(acceptAllChangesOnSuccess);
+        if (invalidateCursosCache)
+        {
+            TryInvalidateCursosCache();
+        }
+
+        return result;
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         ValidateCupoMaximo();
-        return base.SaveChangesAsync(cancellationToken);
+        return SaveChangesInternalAsync(
+            () => base.SaveChangesAsync(cancellationToken),
+            cancellationToken);
     }
 
     public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default)
     {
         ValidateCupoMaximo();
-        return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);
+        return SaveChangesInternalAsync(
+            () => base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken),
+            cancellationToken);
     }
 
     protected override void OnModelCreating(ModelBuilder builder)
@@ -112,5 +137,43 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                 throw new InvalidOperationException($"Se excedio el cupo maximo del curso {cursoId}.");
             }
         }
+    }
+
+    private bool ShouldInvalidateCursosCache()
+    {
+        return ChangeTracker.Entries<Curso>()
+            .Any(e => e.State is EntityState.Added or EntityState.Modified or EntityState.Deleted);
+    }
+
+    private void TryInvalidateCursosCache()
+    {
+        try
+        {
+            _cache.Remove(CacheKeys.CursosActivos);
+        }
+        catch
+        {
+            // Si Redis no esta disponible, no bloqueamos la transaccion de negocio.
+        }
+    }
+
+    private async Task<int> SaveChangesInternalAsync(Func<Task<int>> saveAction, CancellationToken cancellationToken)
+    {
+        var invalidateCursosCache = ShouldInvalidateCursosCache();
+        var result = await saveAction();
+
+        if (invalidateCursosCache)
+        {
+            try
+            {
+                await _cache.RemoveAsync(CacheKeys.CursosActivos, cancellationToken);
+            }
+            catch
+            {
+                // Si Redis no esta disponible, no bloqueamos la transaccion de negocio.
+            }
+        }
+
+        return result;
     }
 }
