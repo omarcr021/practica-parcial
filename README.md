@@ -112,29 +112,6 @@ Pendiente de despliegue. (Se actualizará una vez publicado por el alumno).
 
 - URL Render: `[A COMPLETAR POR EL ALUMNO]`
 
-## Instrucciones de Despliegue en Render (Pregunta 6)
-
-Para desplegar la aplicación en Render, sigue estos pasos:
-
-1. **Crear Web Service**:
-   - Conecta tu repositorio de GitHub en Render y selecciona crear un **Web Service**.
-   - En **Environment**, selecciona `Docker` (el proyecto incluye un `Dockerfile` configurado para .NET 10).
-
-2. **Configurar Base de Datos (SQLite)**:
-   - Ve a la pestaña **Disks** del Web Service y añade un disco:
-     - **Name**: `data` (o el de tu preferencia)
-     - **Mount Path**: `/data`
-     - **Size**: 1 GB
-
-3. **Variables de Entorno**:
-   - `ASPNETCORE_ENVIRONMENT` = `Production`
-   - `ASPNETCORE_URLS` = `http://0.0.0.0:80`
-   - `ConnectionStrings__DefaultConnection` = `Data Source=/data/parcial.db`
-   - `Redis__ConnectionString` = `<url_de_tu_instancia_redis_en_render>`
-
-4. **Desplegar**:
-   - Haz clic en **Deploy**. El servicio construirá la imagen Docker, aplicará las migraciones iniciales automáticamente por el código en `Program.cs`/`SeedData.cs` y estará listo en línea.
-
 ## Flujo Git del examen
 
 Se trabaja en una rama por pregunta y cada rama se integra con PR hacia `main`.
