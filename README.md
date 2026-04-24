@@ -8,7 +8,7 @@ Aplicacion web en ASP.NET Core MVC (.NET 10) con Identity, EF Core y SQLite para
 - [x] Pregunta 2 - Catalogo de cursos y filtros
 - [x] Pregunta 3 - Inscripcion y validaciones de matricula
 - [x] Pregunta 4 - Sesiones y Redis
-- [ ] Pregunta 5 - Panel de Coordinador
+- [x] Pregunta 5 - Panel de Coordinador
 - [ ] Pregunta 6 - Despliegue en Render
 
 ## Requisitos
@@ -141,6 +141,7 @@ git push -u origin nombre-rama
 - 2026-04-23: Se marca avance de Pregunta 1 y Pregunta 2.
 - 2026-04-23: Se marca avance de Pregunta 3 con inscripcion en estado Pendiente y validaciones server-side (autenticacion, cupo y solape de horario).
 - 2026-04-23: Se marca avance de Pregunta 4 con session del ultimo curso y cache de cursos activos por 60s con Redis/fallback local.
+- 2026-04-24: Se marca avance de Pregunta 5 con Panel de Coordinador, CRUD de cursos, y gestion de matriculas con roles.
 
 ---
 

@@ -33,6 +33,12 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Cursos" asp-action="Index">Catalogo</a>
                         </li>
+                        @if (User.IsInRole("Coordinador"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Coordinador" asp-action="Index">Panel Coordinador</a>
+                            </li>
+                        }
                         @if (ultimoCursoId.HasValue && !string.IsNullOrWhiteSpace(ultimoCursoNombre))
                         {
                             <li class="nav-item">

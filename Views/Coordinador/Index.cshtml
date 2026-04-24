@@ -1,0 +1,158 @@
+@model parcial.Models.CoordinadorPanelViewModel
+
+@{
+    ViewData["Title"] = "Panel de Coordinador";
+}
+
+<h1 class="mb-3">Panel de Coordinador</h1>
+
+@if (TempData["SuccessMessage"] is string successMessage)
+{
+    <div class="alert alert-success">@successMessage</div>
+}
+
+@if (TempData["ErrorMessage"] is string errorMessage)
+{
+    <div class="alert alert-danger">@errorMessage</div>
+}
+
+<div class="d-flex gap-2 mb-3">
+    <a asp-action="CreateCurso" class="btn btn-primary">Crear curso</a>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <strong>Cursos</strong>
+    </div>
+    <div class="card-body p-0">
+        @if (!Model.Cursos.Any())
+        {
+            <div class="p-3">No hay cursos registrados.</div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-striped mb-0 align-middle">
+                    <thead>
+                        <tr>
+                            <th>Codigo</th>
+                            <th>Nombre</th>
+                            <th>Creditos</th>
+                            <th>Cupo</th>
+                            <th>Horario</th>
+                            <th>Activo</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var curso in Model.Cursos)
+                    {
+                        <tr>
+                            <td>@curso.Codigo</td>
+                            <td>@curso.Nombre</td>
+                            <td>@curso.Creditos</td>
+                            <td>@curso.CupoMaximo</td>
+                            <td>@curso.HorarioInicio.ToString(@"hh\:mm") - @curso.HorarioFin.ToString(@"hh\:mm")</td>
+                            <td>
+                                @if (curso.Activo)
+                                {
+                                    <span class="badge text-bg-success">Si</span>
+                                }
+                                else
+                                {
+                                    <span class="badge text-bg-secondary">No</span>
+                                }
+                            </td>
+                            <td>
+                                <div class="d-flex gap-2">
+                                    <a asp-action="EditCurso" asp-route-id="@curso.Id" class="btn btn-sm btn-outline-primary">Editar</a>
+                                    @if (curso.Activo)
+                                    {
+                                        <form asp-action="DesactivarCurso" method="post">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@curso.Id" />
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">Desactivar</button>
+                                        </form>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <strong>Matriculas por curso</strong>
+        <form method="get" asp-action="Index" class="d-flex gap-2">
+            <select name="cursoId" class="form-select form-select-sm">
+                <option value="">Todos</option>
+                @foreach (var curso in Model.Cursos)
+                {
+                    var selected = Model.CursoIdFiltro == curso.Id;
+                    <option value="@curso.Id" selected="@selected">@curso.Nombre</option>
+                }
+            </select>
+            <button type="submit" class="btn btn-sm btn-outline-primary">Filtrar</button>
+        </form>
+    </div>
+    <div class="card-body p-0">
+        @if (!Model.Matriculas.Any())
+        {
+            <div class="p-3">No hay matriculas para el filtro seleccionado.</div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="table table-striped mb-0 align-middle">
+                    <thead>
+                        <tr>
+                            <th>Curso</th>
+                            <th>Estudiante</th>
+                            <th>Fecha</th>
+                            <th>Estado</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    @foreach (var matricula in Model.Matriculas)
+                    {
+                        <tr>
+                            <td>@matricula.CursoNombre</td>
+                            <td>@matricula.UsuarioEmail</td>
+                            <td>@matricula.FechaRegistro.ToLocalTime().ToString("yyyy-MM-dd HH:mm")</td>
+                            <td>@matricula.Estado</td>
+                            <td>
+                                <div class="d-flex gap-2">
+                                    @if (matricula.Estado != parcial.Models.EstadoMatricula.Confirmada)
+                                    {
+                                        <form asp-action="ConfirmarMatricula" method="post">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@matricula.Id" />
+                                            <input type="hidden" name="cursoId" value="@Model.CursoIdFiltro" />
+                                            <button type="submit" class="btn btn-sm btn-outline-success">Confirmar</button>
+                                        </form>
+                                    }
+                                    @if (matricula.Estado != parcial.Models.EstadoMatricula.Cancelada)
+                                    {
+                                        <form asp-action="CancelarMatricula" method="post">
+                                            @Html.AntiForgeryToken()
+                                            <input type="hidden" name="id" value="@matricula.Id" />
+                                            <input type="hidden" name="cursoId" value="@Model.CursoIdFiltro" />
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">Cancelar</button>
+                                        </form>
+                                    }
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+</div>
