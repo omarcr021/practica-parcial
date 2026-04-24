@@ -1,6 +1,6 @@
 # Portal Interno Universitario - Examen MVC
 
-Aplicacion web en ASP.NET Core MVC (.NET 10) con Identity, EF Core y SQLite para la gestion de cursos y matriculas.
+Aplicacion web en ASP.NET Core MVC (.NET 8) con Identity, EF Core y SQLite para la gestion de cursos y matriculas.
 
 ## Estado del avance
 
@@ -13,7 +13,7 @@ Aplicacion web en ASP.NET Core MVC (.NET 10) con Identity, EF Core y SQLite para
 
 ## Requisitos
 
-- .NET SDK 10
+- .NET SDK 8
 - Git
 - (Para preguntas 4 y 6) Redis
 
