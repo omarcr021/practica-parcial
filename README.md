@@ -6,7 +6,7 @@ Aplicacion web en ASP.NET Core MVC (.NET 10) con Identity, EF Core y SQLite para
 
 - [x] Pregunta 1 - Bootstrap + Modelo de datos
 - [x] Pregunta 2 - Catalogo de cursos y filtros
-- [ ] Pregunta 3 - Inscripcion y validaciones de matricula
+- [x] Pregunta 3 - Inscripcion y validaciones de matricula
 - [ ] Pregunta 4 - Sesiones y Redis
 - [ ] Pregunta 5 - Panel de Coordinador
 - [ ] Pregunta 6 - Despliegue en Render
@@ -128,6 +128,7 @@ git push -u origin nombre-rama
 
 - 2026-04-23: Se crea README base con setup local, migraciones, variables de entorno y seccion de Render.
 - 2026-04-23: Se marca avance de Pregunta 1 y Pregunta 2.
+- 2026-04-23: Se marca avance de Pregunta 3 con inscripcion en estado Pendiente y validaciones server-side (autenticacion, cupo y solape de horario).
 
 ---
 
