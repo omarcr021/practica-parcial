@@ -3,63 +3,64 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using parcial.Data;
 using parcial.Models;
+using parcial.Services;
 
 namespace parcial.Controllers;
 
 public class CursosController : Controller
 {
     private readonly ApplicationDbContext _context;
+    private readonly ICursoCatalogoCacheService _cursoCatalogoCacheService;
     private readonly UserManager<ApplicationUser> _userManager;
 
-    public CursosController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+    public CursosController(
+        ApplicationDbContext context,
+        ICursoCatalogoCacheService cursoCatalogoCacheService,
+        UserManager<ApplicationUser> userManager)
     {
         _context = context;
+        _cursoCatalogoCacheService = cursoCatalogoCacheService;
         _userManager = userManager;
     }
 
     [HttpGet]
     public async Task<IActionResult> Index([FromQuery] CursoCatalogoFiltros filtros)
     {
-        var query = _context.Cursos
-            .AsNoTracking()
-            .Where(c => c.Activo)
-            .OrderBy(c => c.Nombre)
-            .ThenBy(c => c.Codigo)
-            .AsQueryable();
+        IEnumerable<Curso> cursos = await _cursoCatalogoCacheService.GetCursosActivosAsync();
 
         if (ModelState.IsValid)
         {
             if (!string.IsNullOrWhiteSpace(filtros.Nombre))
             {
                 var nombre = filtros.Nombre.Trim();
-                query = query.Where(c => c.Nombre.Contains(nombre));
+                cursos = cursos.Where(c => c.Nombre.Contains(nombre, StringComparison.OrdinalIgnoreCase));
             }
 
             if (filtros.CreditosMin.HasValue)
             {
-                query = query.Where(c => c.Creditos >= filtros.CreditosMin.Value);
+                cursos = cursos.Where(c => c.Creditos >= filtros.CreditosMin.Value);
             }
 
             if (filtros.CreditosMax.HasValue)
             {
-                query = query.Where(c => c.Creditos <= filtros.CreditosMax.Value);
+                cursos = cursos.Where(c => c.Creditos <= filtros.CreditosMax.Value);
             }
 
             if (filtros.HorarioInicio.HasValue)
             {
-                query = query.Where(c => c.HorarioInicio >= filtros.HorarioInicio.Value);
+                cursos = cursos.Where(c => c.HorarioInicio >= filtros.HorarioInicio.Value);
             }
 
             if (filtros.HorarioFin.HasValue)
             {
-                query = query.Where(c => c.HorarioFin <= filtros.HorarioFin.Value);
+                cursos = cursos.Where(c => c.HorarioFin <= filtros.HorarioFin.Value);
             }
         }
 
         var model = new CatalogoCursosViewModel
         {
             Filtros = filtros,
-            Cursos = await query.ToListAsync()
+            Cursos = cursos.ToList()
         };
 
         return View(model);
@@ -76,6 +77,9 @@ public class CursosController : Controller
         {
             return NotFound();
         }
+
+        HttpContext.Session.SetInt32("UltimoCursoId", curso.Id);
+        HttpContext.Session.SetString("UltimoCursoNombre", curso.Nombre);
 
         return View(curso);
     }
