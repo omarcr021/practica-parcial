@@ -1,0 +1,31 @@
+@model parcial.Models.Curso
+
+@{
+    ViewData["Title"] = "Detalle del curso";
+}
+
+<h1 class="mb-3">Detalle del curso</h1>
+
+@if (TempData["InfoMessage"] is string infoMessage)
+{
+    <div class="alert alert-info">@infoMessage</div>
+}
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">@Model.Nombre</h5>
+        <p class="card-text mb-1"><strong>Codigo:</strong> @Model.Codigo</p>
+        <p class="card-text mb-1"><strong>Creditos:</strong> @Model.Creditos</p>
+        <p class="card-text mb-1"><strong>Cupo maximo:</strong> @Model.CupoMaximo</p>
+        <p class="card-text mb-3"><strong>Horario:</strong> @Model.HorarioInicio.ToString(@"hh\:mm") - @Model.HorarioFin.ToString(@"hh\:mm")</p>
+
+        <div class="d-flex gap-2">
+            <form asp-action="Inscribirse" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" value="@Model.Id" />
+                <button type="submit" class="btn btn-success">Inscribirse</button>
+            </form>
+            <a asp-action="Index" class="btn btn-outline-secondary">Volver al catalogo</a>
+        </div>
+    </div>
+</div>
