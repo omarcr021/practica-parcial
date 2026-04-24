@@ -108,9 +108,7 @@ Variables minimas requeridas:
 
 ## URL de despliegue en Render
 
-Pendiente de despliegue. (Se actualizará una vez publicado por el alumno).
-
-- URL Render: `[A COMPLETAR POR EL ALUMNO]`
+- URL Render: (https://practica-parcial-ynqe.onrender.com/)
 
 ## Flujo Git del examen
 
