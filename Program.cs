@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using parcial.Data;
 using parcial.Models;
 using parcial.Services;
+using Microsoft.AspNetCore.DataProtection;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +29,10 @@ if (!string.IsNullOrWhiteSpace(redisConnectionString))
     {
         options.Configuration = redisConnectionString;
     });
+
+    var redis = ConnectionMultiplexer.Connect(redisConnectionString);
+    builder.Services.AddDataProtection()
+        .PersistKeysToStackExchangeRedis(redis, "DataProtection-Keys");
 }
 else
 {
